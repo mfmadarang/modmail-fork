@@ -42,7 +42,13 @@ class Watchdog:
         results = {}
         for name in WATCHED_CONTAINERS:
             try:
-                container = self.docker_client.containers.get(name)
+                matches = self.docker_client.containers.list(
+                    filters={"label": f"com.docker.compose.service={name}"}
+                )
+                if not matches:
+                    log.warning(f"Container for service {name} not found")
+                    continue
+                container = matches[0]
                 stats = container.stats(stream=False)
                 mem_usage = stats["memory_stats"].get("usage", 0)
                 mem_limit = stats["memory_stats"].get("limit", 1)

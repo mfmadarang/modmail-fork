@@ -105,7 +105,7 @@ services:
     restart: unless-stopped
 
   rabbitmq:
-    image: rabbitmq:3-alpine
+    image: rabbitmq:3-management-alpine
     restart: unless-stopped
 
   watchdog:
