@@ -1,4 +1,4 @@
-FROM pythonL3.11-slim
+FROM python3.11-slim
 
 WORKDIR /app
 COPY ops-api/requirements.txt .
