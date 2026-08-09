@@ -18,7 +18,8 @@ class OpsMetrics(commands.Cog):
     async def report_metrics(self):
         await self.bot.wait_until_ready()
 
-        latency_ms = round(self.bot.latency * 1000, 2)
+        # skipped for now since .latency isnt populated
+        latency_ms = None
         error_count = ErrorHandler.pop_error_count()
 
         async with self.bot.pool.acquire() as conn:
