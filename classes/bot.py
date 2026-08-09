@@ -80,6 +80,7 @@ class ModMail(commands.AutoShardedBot):
 
         self._cogs = [
             "admin",
+            "auto_close",
             "configuration",
             "core",
             "direct_message",
@@ -91,6 +92,7 @@ class ModMail(commands.AutoShardedBot):
             "owner",
             "premium",
             "snippet",
+            "tags"
         ]
 
     @property

@@ -114,7 +114,21 @@ class DirectMessageEvents(commands.Cog, name="Direct Message"):
                     )
                     return
 
+            await tools.touch_ticket(self.bot, channel.id, guild.id)
+
             log_channel = await guild.get_channel(data[4])
+
+            await tools.touch_ticket(self.bot, channel.id, guild.id)
+            await tools.send_webhook_alert(
+                self.bot,
+                "New Ticket",
+                f"**{message.author.name}** opened  aticket in **{guild.name}**",
+                colour=0x00FF00,
+            )
+
+            log_channel = await guild.get_channel(data[4]
+            )
+
             if log_channel:
                 embed = Embed(
                     title="New Ticket",
@@ -227,6 +241,9 @@ class DirectMessageEvents(commands.Cog, name="Direct Message"):
             await message.channel.send(
                 ErrorEmbed("The bot is missing permissions. Please contact an admin on the server.")
             )
+            return
+
+        await tools.touch_ticket(self.bot, channel.id, guild.id)
 
     @commands.Cog.listener()
     async def on_raw_reaction_add(self, payload):

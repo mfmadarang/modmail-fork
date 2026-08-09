@@ -1,6 +1,8 @@
 import logging
 import time
 
+from datetime import datetime, timezone
+
 import discord
 
 from discord.http import Route
@@ -13,6 +15,59 @@ from classes.message import Message
 
 log = logging.getLogger(__name__)
 
+async def send_webhook_alert(bot, title, description, colour=0x1E90FF):
+    """POST a Discord-webhook-formatted embed to config.WEBHOOK_URL, if one is set."""
+
+    if not bot.config.WEBHOOK_URL:
+        return
+
+    payload = {
+        "embeds": [
+            {
+                "title": title,
+                "description": description,
+                "color": colour,
+                "timestamp": datetime.now(timezone.utc).isoformat(),
+            }
+        ]
+    }
+
+    try:
+        await bot.session.post(bot.config.WEBHOOK_URL, json=payload)
+    except Exception as e:
+        log.error(f"Failed to send webhook alert: {e}")
+
+async def touch_ticket(bot, channel_id, guild_id):
+    """Record activity ona  ticket, creating its row if needed and clearing any warning."""
+
+    async with bot.pool.acquire() as conn:
+        await conn.execute(
+            "INSERT INTO ticket (channel, guild, last_activity, warned) VALUES ($1, $2, $3, FALSE)"
+            "ON CONFLICT (channel) DO UPDATE SET last_activity=$3, warned=FALSE",
+            channel_id,
+            guild_id,
+            int(time.time() * 1000),
+        )
+
+async def get_ticket(bot, channel_id):
+    async with bot.pool.acquire() as conn:
+        return await conn.fetchrow("SELECT * FROM ticket WHERE channel=$1", channel_id)
+
+async def set_ticket_tag(bot, channel_id, guild_id, tag):
+    async with bot.pool.acquire() as conn:
+        await conn.execute(
+            "INSERT INTO ticket (channel, guild, tag, last_activity, warned) "
+            "VALUES ($1, $2, $3, $4, FALSE) "
+            "ON CONFLICT (channel) DO UPDATE SET tag=$3",
+            channel_id,
+            guild_id,
+            tag,
+            int(time.time() * 1000),
+        )
+
+async def delete_ticket(bot, channel_id):
+    async with bot.pool.acquire() as conn:
+        await conn.execute("DELETE FROM ticket WHERE channel=$1", channel_id)
 
 def create_fake_user(user_id):
     return User(

@@ -162,6 +162,8 @@ class Core(commands.Cog):
             await ctx.send(ErrorEmbed("Missing permissions to delete this channel."))
             return
 
+        await tools.delete_ticket(self.bot, ctx.channel.id)
+
         embed = ErrorEmbed(
             "Ticket Closed",
             reason if reason else "No reason was provided.",
