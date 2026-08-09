@@ -116,6 +116,9 @@ class DirectMessageEvents(commands.Cog, name="Direct Message"):
 
             await tools.touch_ticket(self.bot, channel.id, guild.id)
 
+            lang = await tools.detect_language(self.bot, message.content)
+            await tools.set_ticket_language(self.bot, channel.id, guild.id, lang)
+
             log_channel = await guild.get_channel(data[4])
 
             await tools.touch_ticket(self.bot, channel.id, guild.id)

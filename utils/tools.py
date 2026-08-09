@@ -65,6 +65,39 @@ async def set_ticket_tag(bot, channel_id, guild_id, tag):
             int(time.time() * 1000),
         )
 
+async def detect_language(bot, text):
+    """Detect the ISO 639-1 language code of a message using the bot's Groq client."""
+
+    prompt = (
+        "Detect the language of the following message. Respond with ONLY the "
+        "ISO 639-1 two-letter language code, nothing else, no punctuation.\n\n"
+        f"Message: {text}"
+    )
+    code = await bot.ai_generate(prompt)
+    return code.strip().lower()[:2]
+
+async def translate_text(bot, text, target_lang):
+    """Translate text into target_lang (ISO 639-1 code) using the bot's Groq client."""
+
+    prompt = (
+        f"Translate the following message into the language with ISO 639-1 code "
+        f"'{target_lang}'. Respond with ONLY the translated text, nothing else.\n\n"
+        f"Message: {text}"
+    )
+    return await bot.ai_generate(prompt)
+
+async def set_ticket_language(bot, channel_id, guild_id, lang):
+    async with bot.pool.acquire() as conn:
+        await conn.execute(
+            "INSERT INTO ticket (channel, guild, user_lang, last_activity, warned) "
+            "VALUES ($1, $2, $3, $4, FALSE) "
+            "ON CONFLICT (channel) DO UPDATE SET user_lang=$3",
+            channel_id,
+            guild_id,
+            lang,
+            int(time.time() * 1000),
+        )
+
 async def delete_ticket(bot, channel_id):
     async with bot.pool.acquire() as conn:
         await conn.execute("DELETE FROM ticket WHERE channel=$1", channel_id)
