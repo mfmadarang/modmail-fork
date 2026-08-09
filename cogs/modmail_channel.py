@@ -76,6 +76,8 @@ class ModMailEvents(commands.Cog):
         staff_lang = data[14]
 
         dm_content = message.content
+        if user_lang and staff_lang and user_lang != staff_lang:
+            dm_content = await tools.translate_text(self.bot, message.content, user_lang)
         embed = Embed("Message Received", dm_content, colour=0xFF4500, timestamp=True)
         embed.set_footer(f"{message.guild.name} | {message.guild.id}", message.guild.icon_url)
 
