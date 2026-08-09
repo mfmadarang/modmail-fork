@@ -21,7 +21,7 @@ THRESHOLDS = {
     "mem_pct": 85.0,
     "cpu_pct": 90.0,
     "queue_depth": 500,
-    "pg_connections": 18,
+    "pg_connections": 25,
 }
 
 WATCHED_CONTAINERS = ["bot", "dispatch", "postgres", "redis", "rabbitmq"]
@@ -34,7 +34,7 @@ class Watchdog:
         self.http = None
 
     async def setup(self):
-        self.pool = await asyncpg.create_pool(DATABASE_URL)
+        self.pool = await asyncpg.create_pool(DATABASE_URL, min_size=1, max_size=3)
         self.redis = await aioredis.from_url(REDIS_URL)
         self.http = aiohttp.ClientSession()
 
