@@ -89,6 +89,7 @@ class ModMail(commands.AutoShardedBot):
             "general",
             "miscellaneous",
             "modmail_channel",
+            "ops_metrics",
             "owner",
             "premium",
             "snippet",

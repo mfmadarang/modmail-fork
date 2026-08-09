@@ -108,5 +108,22 @@ services:
     image: rabbitmq:3-alpine
     restart: unless-stopped
 
-volumes:
-  postgres:
+  volumes:
+    postgres:
+
+  watchdog:
+    build:
+      context: ..
+      dockerfile: docker/watchdog/Dockerfile
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgres://postgres@postgres:5432/modmail
+      - RABBITMQ_MGMT_URL=http://guest:guest@rabbitmq:15672/api/queues
+      - REDIS_URL=redis://redis:6379
+      - WATCHDOG_INTERVAL=30
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - postgres
+      - redis
+      - rabbitmq
