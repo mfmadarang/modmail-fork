@@ -1,5 +1,7 @@
 # modmail-custom
+# modmail-custom
 
+[![Discord](https://discord.com/api/guilds/576016832956334080/widget.png)](https://discord.gg/wjWJwJB)
 [![Discord](https://discord.com/api/guilds/576016832956334080/widget.png)](https://discord.gg/wjWJwJB)
 [![License](https://img.shields.io/github/license/chamburr/modmail.svg)](LICENSE)
 

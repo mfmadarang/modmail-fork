@@ -1,0 +1,4 @@
+asyncpg
+docker
+redis
+aiohttp
