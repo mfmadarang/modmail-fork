@@ -12,11 +12,19 @@ log = logging.getLogger(__name__)
 
 
 class ErrorHandler(commands.Cog):
+    _error_count = 0
+
     def __init__(self, bot):
         self.bot = bot
         bot.on_command_error = self._on_command_error
 
+    @classmethod
+    def pop_error_count(cls):
+        count, cls._error_count = cls._error_count, 0
+        return count
+
     async def _on_command_error(self, ctx, error, bypass=False):
+        ErrorHandler._error_count += 1
         if (
             hasattr(ctx.command, "on_error")
             or (ctx.command and hasattr(ctx.cog, f"_{ctx.command.cog_name}__error"))

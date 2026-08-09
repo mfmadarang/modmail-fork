@@ -112,7 +112,7 @@ class ModMailEvents(commands.Cog):
 
         await message.channel.send(embed, files=files)
 
-        await tools.touch_ticket(self.bot, message.channel_id, message.guild.id)
+        await tools.touch_ticket(self.bot, message.channel.id, message.guild.id)
 
         try:
             await message.delete()

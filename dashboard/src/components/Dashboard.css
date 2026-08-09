@@ -1,0 +1,54 @@
+.dashboard {
+  min-height: 100vh;
+  background: #fff;
+  color: #111;
+  padding: 40px;
+  font-family: ui-monospace, 'SF Mono', Consolas, monospace;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.dashboard__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 24px;
+}
+
+.dashboard__header h1 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0;
+}
+
+.dashboard__header span {
+  color: #888;
+}
+
+.dashboard__error {
+  color: #b00;
+}
+
+.dashboard__table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.dashboard__table th,
+.dashboard__table td {
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.dashboard__table th {
+  color: #888;
+  font-weight: 500;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+}
+
+.dashboard__cell--error {
+  color: #b00;
+}
