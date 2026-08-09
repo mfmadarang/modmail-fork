@@ -1,60 +1,38 @@
-# ModMail
+# modmail-custom
 
-[![Discord](https://discord.com/api/guilds/576016832956334080/widget.png)][discord]
+[![Discord](https://discord.com/api/guilds/576016832956334080/widget.png)](https://discord.gg/wjWJwJB)
 [![License](https://img.shields.io/github/license/chamburr/modmail.svg)](LICENSE)
 
-A feature-rich Discord bot for easy communication between server staff and users.
+My own personal fork of [chamburr/modmail](https://github.com/chamburr/modmail), the open-source bot behind [modmail.xyz](https://modmail.xyz). All the real credit goes to chamburr and everyone who built it. Want the actual bot? Grab it from that repo instead, or join their [Discord server](https://discord.gg/wjWJwJB) for support and updates.
 
-![Screenshot](https://user-images.githubusercontent.com/42373024/194307657-9a146d26-c5ac-4138-8428-a78d2cacf6a6.png)
+## What this actually is
 
-A new channel is created whenever a user messages the bot, and the channel will serve as a shared
-inbox for seamless communication between staff and the user.
+I help out as an admin for the official ModMail bot, but this repo has nothing to do with that. It's just me messing around with the code on my own time to learn and try stuff. Not official, not connected to the ModMail team, not endorsed by them. Just my own side project built on top of their code.
 
-To learn more, check out our [website](https://modmail.xyz) or visit our [Discord server][discord].
+## What I added
 
-## Contributing
+Everything here is extra stuff on top. The core bot still works exactly like the original (tickets, replies, snippets, all of it).
 
-There are many ways you can contribute to this project:
+| Feature | What it does |
+|---|---|
+| Ticket tags | Label tickets like `bug`, `billing`, or `abuse` to keep things sorted |
+| Auto-close | Tickets that sit quiet for a while close on their own |
+| Webhook alerts | Sends a Discord webhook message when a ticket opens, gets tagged, or auto-closes |
+| Ops monitoring *(still building this)* | The bot tracks its own speed and errors, and a separate watchdog service keeps an eye on the database, queue, and containers, flagging anything that looks off |
 
-- [Submitting bugs and suggestions](https://github.com/chamburr/modmail/issues)
-- [Reviewing pull requests](https://github.com/chamburr/modmail/pulls)
-- [Contribute directly to the code base](https://github.com/chamburr/modmail/pulls)
+## Running it
 
-For more information, please see our [contributing guidelines](CONTRIBUTING.md).
+Same as upstream, just trimmed to 5 containers for local testing, no dashboard or API needed:
 
-The issue tracker here is only for bug reports and suggestions. Please do not use it to ask a
-question. Instead, ask it on our [Discord server][discord].
-
-## Self-hosting
-
-This guide requires you to have basic knowledge about command line, Docker and Discord bots. We
-will not provide any form of support for self-hosting.
-
-First, create a Discord bot on the [developer portal](https://discord.com/developers). You must
-enable the server member intent and the message content intent for the bot to function.
-
-Then, install Git and Docker on your machine. Clone this repository, copy `docker/.env.example` to
-`docker/.env` and fill in all the empty configurations.
-
-Finally, use the following commands to start ModMail.
+- `bot`, the actual Discord bot, Python
+- `dispatch`, handles the Discord connection (using `tigefa/twilight-dispatch` instead of the official image since I'm on Apple Silicon and the official one has no arm64 build. Unofficial, testing only)
+- `postgres`, `redis`, `rabbitmq`
 
 ```
-cd docker
-docker compose up -d
+cp .env.example .env   # fill in your bot token etc
+docker compose -f docker/docker-compose.yml up -d
 ```
 
-If you prefer to build your own images for local development, then use these commands.
+## Credit
 
-```
-cd docker
-docker compose build
-docker compose up -d
-```
-
-Your self-hosted bot should be up now. Congratulations!
-
-## License
-
-This project is licensed under [GNU Affero General Public License v3.0](LICENSE).
-
-[discord]: https://discord.gg/wjWJwJB
+This is chamburr's code with my stuff added on top. Check [`LICENSE`](./LICENSE) for the terms, and the original repo for the most current version of those. Big thanks to chamburr and everyone in the ModMail community for the project this is built on.
