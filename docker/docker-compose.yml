@@ -108,5 +108,17 @@ services:
     image: rabbitmq:3-alpine
     restart: unless-stopped
 
+  ops-api:
+    build:
+      context: ..
+      dockerfile: docker/ops-api/Dockerfile
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://postgres@postgres:5432/modmail
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+
 volumes:
   postgres:
