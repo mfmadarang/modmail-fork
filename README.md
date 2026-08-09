@@ -1,60 +1,48 @@
-# ModMail
+# modmail-custom
 
-[![Discord](https://discord.com/api/guilds/576016832956334080/widget.png)][discord]
+[![Discord](https://discord.com/api/guilds/576016832956334080/widget.png)](https://discord.gg/wjWJwJB)
 [![License](https://img.shields.io/github/license/chamburr/modmail.svg)](LICENSE)
 
-A feature-rich Discord bot for easy communication between server staff and users.
+A personal fork of [chamburr/modmail](https://github.com/chamburr/modmail), the open-source Discord bot behind [modmail.xyz](https://modmail.xyz), extended with additional features for ticket management and operational monitoring.
 
-![Screenshot](https://user-images.githubusercontent.com/42373024/194307657-9a146d26-c5ac-4138-8428-a78d2cacf6a6.png)
+## Disclaimer
 
-A new channel is created whenever a user messages the bot, and the channel will serve as a shared
-inbox for seamless communication between staff and the user.
+This project is unofficial and is not affiliated with, endorsed by, or representative of the ModMail team. It is an independent, personal effort built on top of their open-source code, maintained separately from any official capacity. For the original bot, visit the [upstream repository](https://github.com/chamburr/modmail) or [modmail.xyz](https://modmail.xyz). For support with the official bot, join their [Discord server](https://discord.gg/wjWJwJB).
 
-To learn more, check out our [website](https://modmail.xyz) or visit our [Discord server][discord].
+## Overview
 
-## Contributing
+The core bot functionality (ticket creation, replies, snippets, and configuration) is unchanged from upstream. This fork adds the following on top:
 
-There are many ways you can contribute to this project:
+| Feature | Description |
+|---|---|
+| Ticket tagging | Tickets can be labeled (e.g. `bug`, `billing`, `abuse`) for easier categorization and filtering |
+| Auto-close on inactivity | Tickets with no activity for a configurable period are closed automatically |
+| Webhook alerts | Outbound Discord webhook notifications on new ticket, tag, and auto-close events |
+| Operational monitoring | A self-reporting metrics cog (bot latency, error rate) paired with a standalone watchdog service that tracks container health, RabbitMQ queue depth, and database connections, with threshold-based incident detection |
 
-- [Submitting bugs and suggestions](https://github.com/chamburr/modmail/issues)
-- [Reviewing pull requests](https://github.com/chamburr/modmail/pulls)
-- [Contribute directly to the code base](https://github.com/chamburr/modmail/pulls)
+## Architecture
 
-For more information, please see our [contributing guidelines](CONTRIBUTING.md).
+This fork runs a reduced five-container stack for local development, omitting the web dashboard and API service present in the upstream project:
 
-The issue tracker here is only for bug reports and suggestions. Please do not use it to ask a
-question. Instead, ask it on our [Discord server][discord].
+| Service | Role |
+|---|---|
+| `bot` | Core Discord bot logic (Python) |
+| `dispatch` | Gateway connection service. Uses [`tigefa/twilight-dispatch`](https://hub.docker.com/r/tigefa/twilight-dispatch) in place of the official image for Apple Silicon compatibility. Unofficial, intended for local development only |
+| `postgres` | Primary datastore |
+| `redis` | Caching and pub/sub |
+| `rabbitmq` | Message queue between the bot and dispatch service |
+| `watchdog` | Custom addition. Polls infrastructure metrics and logs threshold-based incidents |
 
-## Self-hosting
+## Getting started
 
-This guide requires you to have basic knowledge about command line, Docker and Discord bots. We
-will not provide any form of support for self-hosting.
+```bash
+cp .env.example .env
+# populate the bot token and remaining configuration values
 
-First, create a Discord bot on the [developer portal](https://discord.com/developers). You must
-enable the server member intent and the message content intent for the bot to function.
-
-Then, install Git and Docker on your machine. Clone this repository, copy `docker/.env.example` to
-`docker/.env` and fill in all the empty configurations.
-
-Finally, use the following commands to start ModMail.
-
-```
 cd docker
 docker compose up -d
 ```
 
-If you prefer to build your own images for local development, then use these commands.
+## Credit and license
 
-```
-cd docker
-docker compose build
-docker compose up -d
-```
-
-Your self-hosted bot should be up now. Congratulations!
-
-## License
-
-This project is licensed under [GNU Affero General Public License v3.0](LICENSE).
-
-[discord]: https://discord.gg/wjWJwJB
+This project is derived from chamburr/modmail and inherits its license. See [`LICENSE`](./LICENSE) for full terms, and refer to the upstream repository for the current, authoritative version. All credit for the original bot belongs to chamburr and its contributors.
