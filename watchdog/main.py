@@ -110,7 +110,7 @@ class Watchdog:
         async with self.pool.acquire() as conn:
             await conn.execute(
                 """
-                INSERT INTO ops_metrics (container, mem_pct, cpu_pct, queue_depth, pg_connections, redis_mem)
+                INSERT INTO ops_metrics (container, mem_pct, cpu_pct, queue_depth, pg_connections, redis_mem_bytes)
                 VALUES ($1, $2, $3, $4, $5, $6)
                 """,
                 container,
