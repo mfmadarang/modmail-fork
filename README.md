@@ -1,50 +1,61 @@
 # modmail-custom
-# modmail-custom
 
-[![Discord](https://discord.com/api/guilds/576016832956334080/widget.png)](https://discord.gg/wjWJwJB)
 [![Discord](https://discord.com/api/guilds/576016832956334080/widget.png)](https://discord.gg/wjWJwJB)
 [![License](https://img.shields.io/github/license/chamburr/modmail.svg)](LICENSE)
 
-A personal fork of [chamburr/modmail](https://github.com/chamburr/modmail), the open-source Discord bot behind [modmail.xyz](https://modmail.xyz), extended with additional features for ticket management and operational monitoring.
+This is my personal fork of [chamburr/modmail](https://github.com/chamburr/modmail), the open-source bot behind [modmail.xyz](https://modmail.xyz).
 
 ## Disclaimer
 
-This project is unofficial and is not affiliated with, endorsed by, or representative of the ModMail team. It is an independent, personal effort built on top of their open-source code, maintained separately from any official capacity. For the original bot, visit the [upstream repository](https://github.com/chamburr/modmail) or [modmail.xyz](https://modmail.xyz). For support with the official bot, join their [Discord server](https://discord.gg/wjWJwJB).
+Just to be clear, this isn't affiliated with or endorsed by the actual ModMail team in any way. It's my own side project, not an official build. If you want the real thing, go grab it from the [upstream repo](https://github.com/chamburr/modmail) or check out [modmail.xyz](https://modmail.xyz). Our [Discord server](https://discord.gg/wjWJwJB) is the place for support on the actual bot.
 
-## Overview
+## What I added
 
-The core bot functionality (ticket creation, replies, snippets, and configuration) is unchanged from upstream. This fork adds the following on top:
+The base bot works exactly like upstream (tickets, replies, snippets, all that). On top of it I added:
 
-| Feature | Description |
+| Feature | What it does |
 |---|---|
-| Ticket tagging | Tickets can be labeled (e.g. `bug`, `billing`, `abuse`) for easier categorization and filtering |
-| Auto-close on inactivity | Tickets with no activity for a configurable period are closed automatically |
-| Webhook alerts | Outbound Discord webhook notifications on new ticket, tag, and auto-close events |
-| Operational monitoring | A self-reporting metrics cog (bot latency, error rate) paired with a standalone watchdog service that tracks container health, RabbitMQ queue depth, and database connections, with threshold-based incident detection |
+| Ticket tagging | Label tickets (`bug`, `billing`, `abuse`, etc.) so they're easier to sort through |
+| Auto-close | Tickets that go quiet for a while close themselves automatically |
+| Webhook alerts | Sends a Discord webhook message whenever a ticket gets created, tagged, or auto-closed |
+| Ops monitoring | A watchdog service that keeps an eye on container health, queue depth, DB connections, and flags anything that looks off. Feeds a little dashboard so I can actually see what's going on |
 
-## Architecture
+## How it's set up
 
-This fork runs a reduced five-container stack for local development, omitting the web dashboard and API service present in the upstream project:
+I trimmed this down to five containers for local dev, dropped the official web dashboard and API since I didn't need them:
 
-| Service | Role |
+| Service | What it's for |
 |---|---|
-| `bot` | Core Discord bot logic (Python) |
-| `dispatch` | Gateway connection service. Uses [`tigefa/twilight-dispatch`](https://hub.docker.com/r/tigefa/twilight-dispatch) in place of the official image for Apple Silicon compatibility. Unofficial, intended for local development only |
-| `postgres` | Primary datastore |
-| `redis` | Caching and pub/sub |
-| `rabbitmq` | Message queue between the bot and dispatch service |
-| `watchdog` | Custom addition. Polls infrastructure metrics and logs threshold-based incidents |
+| `bot` | The actual bot logic (Python) |
+| `dispatch` | Handles the gateway connection. Running [`tigefa/twilight-dispatch`](https://hub.docker.com/r/tigefa/twilight-dispatch) instead of the official image since I'm on Apple Silicon and the official one doesn't have an arm64 build. Community image, local dev only |
+| `postgres` | Database |
+| `redis` | Caching |
+| `rabbitmq` | Queue between the bot and dispatch |
+| `watchdog` | Mine, polls stats and logs stuff when something looks broken |
+| `ops-api` | Mine, small FastAPI service that serves the watchdog's data to the dashboard |
 
-## Getting started
+## Dashboard
+
+npm install
+Threw together a React dashboard that polls `ops-api` every 30s and shows live stats per container. Doesn't run in Docker, just run it separately:
+
+```bash
+cd dashboard
+npm run dev
+```
+
+It points at `http://localhost:8000` for the API by default, check `dashboard/.env` if you need to change that.
+
+## Running it
 
 ```bash
 cp .env.example .env
-# populate the bot token and remaining configuration values
+# fill in your bot token and the rest
 
 cd docker
 docker compose up -d
 ```
 
-## Credit and license
+## Credit
 
-This project is derived from chamburr/modmail and inherits its license. See [`LICENSE`](./LICENSE) for full terms, and refer to the upstream repository for the current, authoritative version. All credit for the original bot belongs to chamburr and its contributors.
+All the real work here is chamburr's, I just built some stuff on top of it. License terms are in [`LICENSE`](./LICENSE), and the upstream repo is for anything core to the bot itself.
