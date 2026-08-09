@@ -421,6 +421,27 @@ class Configuration(commands.Cog):
         )
 
     @checks.in_database()
+    @checks.has_permissions(administrator=True)
+    @commands.guild_only()
+    @commands.command(
+        description="Set or clear the staff language for automatic ticket translation.",
+        usage="stafflang [code]",
+    )
+    async def stafflang(self, ctx, code: str = None):
+        if code is not None:
+            code = code.strip().lower()[:2]
+
+        async with self.bot.pool.acquire() as conn:
+            await conn.execute("UPDATE data SET stafflang=$1 WHERE guild=$2", code, ctx.guild.id)
+
+        await ctx.send(
+            Embed(
+                f"The staff language is set to `{code}`."
+                if code
+                else "The staff language is cleared. Translation is now disabled."
+            )
+        )
+    @checks.in_database()
     @checks.is_premium()
     @checks.has_permissions(administrator=True)
     @commands.guild_only()
