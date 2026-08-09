@@ -71,7 +71,12 @@ class ModMailEvents(commands.Cog):
         if snippet is True:
             message.content = tools.tag_format(message.content, member)
 
-        embed = Embed("Message Received", message.content, colour=0xFF4500, timestamp=True)
+        ticket_row = await tools.get_ticket(self.bot, message.channel.id)
+        user_lang = ticket_row["user_lang"] if ticket_row else None
+        staff_lang = data[14]
+
+        dm_content = message.content
+        embed = Embed("Message Received", dm_content, colour=0xFF4500, timestamp=True)
         embed.set_footer(f"{message.guild.name} | {message.guild.id}", message.guild.icon_url)
 
         if anon is False:
@@ -95,6 +100,7 @@ class ModMailEvents(commands.Cog):
             )
             return
 
+        embed.description = message.content
         embed.title = "Message Sent"
         embed.set_author(
             str(message.author.name) if anon is False else f"{message.author.name} (Anonymous)",

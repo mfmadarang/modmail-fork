@@ -229,6 +229,13 @@ class DirectMessageEvents(commands.Cog, name="Direct Message"):
             message.author.avatar_url,
         )
 
+        ticket_row = await tools.get_ticket(self.bot, channel.id)
+        user_lang = ticket_row["user_lang"] if ticket_row else None
+        staff_lang = data[14]
+
+        if user_lang and staff_lang and user_lang != staff_lang:
+            embed.description = await tools.translate_text(self.bot, message.content, staff_lang)
+
         for count, attachment in enumerate(
             [attachment.url for attachment in dm_message.attachments], start=1
         ):
